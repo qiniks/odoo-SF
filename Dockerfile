@@ -1,5 +1,4 @@
 FROM ubuntu:noble
-MAINTAINER Odoo S.A. <info@odoo.com>
 
 SHELL ["/bin/bash", "-xo", "pipefail", "-c"]
 
@@ -14,32 +13,32 @@ ARG TARGETARCH
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive \
     apt-get install -y --no-install-recommends \
-        ca-certificates \
-        curl \
-        dirmngr \
-        fonts-noto-cjk \
-        gnupg \
-        libssl-dev \
-        node-less \
-        npm \
-        python3-magic \
-        python3-num2words \
-        python3-odf \
-        python3-pdfminer \
-        python3-pip \
-        python3-phonenumbers \
-        python3-pyldap \
-        python3-qrcode \
-        python3-renderpm \
-        python3-setuptools \
-        python3-slugify \
-        python3-vobject \
-        python3-watchdog \
-        python3-xlrd \
-        python3-xlwt \
-        xz-utils && \
+    ca-certificates \
+    curl \
+    dirmngr \
+    fonts-noto-cjk \
+    gnupg \
+    libssl-dev \
+    node-less \
+    npm \
+    python3-magic \
+    python3-num2words \
+    python3-odf \
+    python3-pdfminer \
+    python3-pip \
+    python3-phonenumbers \
+    python3-pyldap \
+    python3-qrcode \
+    python3-renderpm \
+    python3-setuptools \
+    python3-slugify \
+    python3-vobject \
+    python3-watchdog \
+    python3-xlrd \
+    python3-xlwt \
+    xz-utils && \
     if [ -z "${TARGETARCH}" ]; then \
-        TARGETARCH="$(dpkg --print-architecture)"; \
+    TARGETARCH="$(dpkg --print-architecture)"; \
     fi; \
     WKHTMLTOPDF_ARCH=${TARGETARCH} && \
     case ${TARGETARCH} in \
@@ -71,8 +70,8 @@ RUN npm install -g rtlcss
 
 # Install Odoo
 ENV ODOO_VERSION 18.0
-ARG ODOO_RELEASE=20250311
-ARG ODOO_SHA=de629e8416caca2475aa59cf73049fc89bf5ea5b
+ARG ODOO_RELEASE=20250320
+ARG ODOO_SHA=f2b9056ce21821292062f3d753dc38dacc3afe4d
 RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/odoo_${ODOO_VERSION}.${ODOO_RELEASE}_all.deb \
     && echo "${ODOO_SHA} odoo.deb" | sha1sum -c - \
     && apt-get update \
@@ -82,6 +81,9 @@ RUN curl -o odoo.deb -sSL http://nightly.odoo.com/${ODOO_VERSION}/nightly/deb/od
 # Copy entrypoint script and Odoo configuration file
 COPY ./entrypoint.sh /
 COPY ./odoo.conf /etc/odoo/
+COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
+
+RUN sed -i 's/\r$//' /entrypoint.sh /usr/local/bin/wait-for-psql.py && chmod +x /entrypoint.sh /usr/local/bin/wait-for-psql.py
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf \
@@ -95,11 +97,9 @@ EXPOSE 8069 8071 8072
 # Set the default config file
 ENV ODOO_RC /etc/odoo/odoo.conf
 
-COPY wait-for-psql.py /usr/local/bin/wait-for-psql.py
 
 # Set default user when running the container
 USER odoo
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["odoo"]
-
