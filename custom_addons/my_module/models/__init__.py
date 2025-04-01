@@ -1,3 +1,1 @@
-from . import custom_sale
-from . import custom_stock
-from . import stock_picking
+from . import api_product, custom_sale, custom_stock, stock_picking

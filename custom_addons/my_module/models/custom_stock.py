@@ -1,4 +1,5 @@
 from odoo import fields, models
+import random
 
 
 class StockPicking(models.Model):
