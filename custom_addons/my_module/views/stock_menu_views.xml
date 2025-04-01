@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Define the action first before referencing it in the menuitem -->
+    <record id="action_special_transfers" model="ir.actions.act_window">
+        <field name="name"> Transfers</field>
+        <field name="res_model">stock.picking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('is_special_transfer', '=', True)]</field>
+        <field name="context">{'default_is_special_transfer': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a new special transfer
+            </p>
+        </field>
+    </record>
+
+    <!-- Now add the menuitem that references the action -->
+    <menuitem id="menu_special_transfers" 
+              name="Testin button" 
+              parent="stock.menu_stock_root" 
+              action="action_special_transfers" 
+              sequence="15"/>
+</odoo>
