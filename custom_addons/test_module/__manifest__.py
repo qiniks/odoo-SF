@@ -1,12 +1,13 @@
 {
-    "name": "bbc",
-    "author": "fsd",
-    "license": "AGPL-3",
-    "category": "Uncategorized",
-    "version": "1.0",
-    "depends": ["base"],
-    "data": ["views/test_view.xml", "security/ir.model.access.csv"],
+    "name": "Hello World",
+    "version": "16.0.1.0.0",
+    "category": "Tools",
+    "summary": "Simple Hello World module for testing",
+    "author": "Your Name",
+    "depends": ["base", "stock"],  # Added 'stock' dependency for Inventory
+    "data": [
+        "views/inventory_views.xml",
+    ],
     "installable": True,
-    "application": False,
-    "auto_install": False
+    "application": True,
 }

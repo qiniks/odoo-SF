@@ -1,6 +1,6 @@
 {
     "name": "Custom Sale and Inventory Extension",
-    "version": "1.0",
+    "version": "16.0.1.0.0",
     "depends": ["sale", "stock"],
     "data": [
         "security/ir.model.access.csv",
