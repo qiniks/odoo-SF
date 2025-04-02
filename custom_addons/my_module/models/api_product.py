@@ -10,11 +10,18 @@ _logger = logging.getLogger(__name__)
 class ApiProduct(models.Model):
     _name = "api.product"
     _description = "Products from External API"
+    _order = "priority desc, date desc"
 
     api_id = fields.Integer(string="API ID")
     name = fields.Char(string="Name")
     date = fields.Date(string="Date")
     design = fields.Char(string="Design")
+    priority = fields.Selection([
+        ('0', 'Low'),
+        ('1', 'Normal'),
+        ('2', 'High'),
+        ('3', 'Very High')
+    ], string="Priority", default='1')
 
     @api.model
     def fetch_and_store_api_data(self):

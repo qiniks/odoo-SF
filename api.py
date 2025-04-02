@@ -14,73 +14,53 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-
-# Function to read JSON file and return a random quantity of items (minimum 5)
+# Helper function to load JSON data
 def load_json_data():
     try:
         with open("data.json", "r") as file:
             data = json.load(file)
-            # Check if data is a list and not empty
             if isinstance(data, list) and data:
-                # Get total number of items
-                total_items = len(data)
-                # Randomly choose a quantity between 5 and total_items
-                random_quantity = random.randint(5, total_items)
-                # Return a random sample of that quantity
-                return random.sample(data, k=random_quantity)
+                return data
             else:
-                return {"error": "No valid data found in JSON"}
+                return None
     except FileNotFoundError:
-        return {"error": "Data file not found"}
+        return None
     except json.JSONDecodeError:
-        return {"error": "Invalid JSON format"}
-    except ValueError:
-        return {"error": "Invalid quantity generated"}
+        return None
 
-
-# API endpoint
+# API endpoint to return a random number of items (1 to max, capped at 100)
 @app.get("/api/get_data")
 async def get_data():
     data = load_json_data()
-    # Ensure we return between 1-5 random items
-    try:
-        with open("data.json", "r") as file:
-            all_data = json.load(file)
-            if isinstance(all_data, list) and all_data:
-                # Get random amount between 1 and 5 (or length of data if less than 5)
-                random_amount = random.randint(1, min(5, len(all_data)))
-                # Return random sample of that size
-                return {
-                    "status": "success",
-                    "data": random.sample(all_data, k=random_amount),
-                }
-            else:
-                return {"status": "error", "message": "No valid data found in JSON"}
-    except FileNotFoundError:
-        return {"status": "error", "message": "Data file not found"}
-    except json.JSONDecodeError:
-        return {"status": "error", "message": "Invalid JSON format"}
-    except ValueError:
-        return {"status": "error", "message": "Error generating random data"}
+    if data is None:
+        return {"status": "error", "message": "Error loading data (file not found or invalid JSON)"}
+    
+    total_items = len(data)
+    # Randomly choose a quantity between 1 and the total number of items (up to 100)
+    random_quantity = random.randint(1, min(total_items, 100))
+    return {
+        "status": "success",
+        "data": random.sample(data, k=random_quantity),
+    }
 
-
-# API endpoint that returns a specific random amount of data
+# API endpoint to return a specific random amount of data (1 to max, capped at 100)
 @app.get("/api/get_data/{amount}")
 async def get_random_data(amount: int):
-    try:
-        with open("data.json", "r") as file:
-            data = json.load(file)
-            # Check if data is a list and not empty
-            if isinstance(data, list) and data:
-                # Ensure amount is not larger than available data
-                amount = min(amount, len(data))
-                # Return a random sample of the specified amount
-                return {"status": "success", "data": random.sample(data, k=amount)}
-            else:
-                return {"status": "error", "message": "No valid data found in JSON"}
-    except FileNotFoundError:
-        return {"status": "error", "message": "Data file not found"}
-    except json.JSONDecodeError:
-        return {"status": "error", "message": "Invalid JSON format"}
-    except ValueError:
-        return {"status": "error", "message": "Invalid amount specified"}
+    data = load_json_data()
+    if data is None:
+        return {"status": "error", "message": "Error loading data (file not found or invalid JSON)"}
+    
+    total_items = len(data)
+    # Ensure amount is between 1 and the total items, capped at 100
+    if amount < 1:
+        return {"status": "error", "message": "Amount must be at least 1"}
+    amount = min(amount, total_items, 100)
+    return {
+        "status": "success",
+        "data": random.sample(data, k=amount),
+    }
+
+# Optional: Run the app (for testing with uvicorn)
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
