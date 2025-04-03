@@ -10,12 +10,25 @@ _logger = logging.getLogger(__name__)
 
 class ApiProduct(models.Model):
     _name = "api.product"
-    _description = "Products from External API"
+    _description = "API Product Data"
+    _order = "is_converted, name"  # Default sort by conversion status then name
 
-    api_id = fields.Integer(string="API ID")
-    name = fields.Char(string="Name")
-    date = fields.Date(string="Date")
-    design = fields.Char(string="Design")
+    api_id = fields.Integer("API ID", required=True)
+    name = fields.Char("Name", required=True)
+    date = fields.Date("Date")
+    design = fields.Char("Design")
+    is_converted = fields.Boolean("Converted to Delivery", default=False)
+    delivery_status = fields.Char(
+        "Status", compute="_compute_delivery_status", store=False
+    )
+
+    @api.depends("is_converted")
+    def _compute_delivery_status(self):
+        for record in self:
+            if record.is_converted:
+                record.delivery_status = "✅ Delivered"
+            else:
+                record.delivery_status = "🔄 Ready for Delivery"
 
     @api.model
     def create_delivery_from_api_product(self, api_product):
@@ -107,6 +120,8 @@ class ApiProduct(models.Model):
                 "location_dest_id": picking_type.default_location_dest_id.id,
             }
         )
+
+        api_product.is_converted = True
 
         return picking
 
@@ -239,6 +254,75 @@ class ApiProduct(models.Model):
                     "title": "API Error",
                     "message": "Invalid response format from API",
                     "sticky": False,
+                    "type": "danger",
+                },
+            }
+
+    def write(self, vals):
+        """Override write to handle kanban changes"""
+        # Check if is_converted is being changed from False to True
+        if "is_converted" in vals and vals["is_converted"]:
+            # Get records that are being converted (that weren't converted before)
+            to_convert = self.filtered(lambda r: not r.is_converted)
+
+            # Call super to perform the write operation
+            result = super(ApiProduct, self).write(vals)
+
+            # Create delivery orders for newly converted products
+            if to_convert:
+                for product in to_convert:
+                    try:
+                        self.create_delivery_from_api_product(product)
+                    except Exception as e:
+                        _logger.error(
+                            f"Failed to create delivery for {product.name}: {str(e)}"
+                        )
+                        # Show a notification to the user
+                        self.env.user.notify_warning(
+                            title="Error Creating Delivery",
+                            message=f"Could not create delivery for {product.name}: {str(e)}",
+                            sticky=True,
+                        )
+            return result
+        else:
+            return super(ApiProduct, self).write(vals)
+
+    def create_delivery_order(self):
+        """Create a delivery order for the current product"""
+        self.ensure_one()
+
+        if self.is_converted:
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Already Converted",
+                    "message": f"Product {self.name} has already been converted to a delivery",
+                    "sticky": False,
+                    "type": "warning",
+                },
+            }
+
+        try:
+            picking = self.env["api.product"].create_delivery_from_api_product(self)
+
+            return {
+                "name": "Delivery Order",
+                "type": "ir.actions.act_window",
+                "res_model": "stock.picking",
+                "view_mode": "form",
+                "res_id": picking.id,
+                "context": {"create": False},
+            }
+        except Exception as e:
+            _logger.error(f"Error creating delivery order: {str(e)}")
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "Error",
+                    "message": f"Failed to create delivery: {str(e)}",
+                    "sticky": True,
                     "type": "danger",
                 },
             }

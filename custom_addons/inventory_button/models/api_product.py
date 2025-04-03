@@ -391,3 +391,26 @@ class ApiProduct(models.Model):
             "view_mode": "tree,form",
             "target": "current",
         }
+
+    def write(self, vals):
+        """Override write to handle kanban drag and drop"""
+        # Check if is_converted is being changed from False to True
+        if "is_converted" in vals and vals["is_converted"]:
+            # Get records that are being converted (that weren't converted before)
+            to_convert = self.filtered(lambda r: not r.is_converted)
+
+            # Call super to perform the write operation
+            result = super(ApiProduct, self).write(vals)
+
+            # Create delivery orders for newly converted products
+            if to_convert:
+                for product in to_convert:
+                    try:
+                        product.create_delivery_order()
+                    except Exception as e:
+                        _logger.error(
+                            f"Failed to create delivery for {product.name}: {str(e)}"
+                        )
+            return result
+        else:
+            return super(ApiProduct, self).write(vals)

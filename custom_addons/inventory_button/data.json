@@ -21,7 +21,9 @@
             "id": 4,
             "name": "Shirt",
             "date": "2025-03-04",
-            "design": "Vintage"
+            "design": "",
+            "fastShip": "True",
+            "quantity": 10
     },
     {
             "id": 5,
