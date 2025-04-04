@@ -43,10 +43,9 @@
             <field name="delivery_status"/>
             <field name="is_fast_ship"/>
             <field name="is_custom_label"/>
-
+            
             <progressbar field="state" 
-                colors='{"to_do": "secondary", "in_process": "warning", "done": "info", "delivered": "success"}'
-                sum_field="quantity"/>
+                colors='{"to_do": "secondary", "in_process": "warning", "done": "info", "delivered": "success"}'/>
 
             <templates>
                 <t t-name="kanban-box">
@@ -133,22 +132,22 @@
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" placeholder="Product Name"/></h1>
+                        <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
-                        <group string="Basic Information">
-                            <field name="api_id"/>
-                            <field name="date"/>
-                            <field name="design"/>
-                            <field name="quantity"/>
-                            <field name="category"/>
-                        </group>
-                        <group string="Shipping Information">
-                            <field name="is_fast_ship"/>
-                            <field name="is_custom_label"/>
-                            <field name="state"/>
-                            <field name="is_converted"/>
-                            <field name="delivery_status"/>
+                    <group string="Basic Information">
+                        <field name="api_id" readonly="1"/>
+                        <field name="date" readonly="1"/>
+                        <field name="design" readonly="1"/>
+                        <field name="quantity" readonly="1"/>
+                        <field name="category" readonly="1"/>
+                    </group>
+                    <group string="Shipping Information">
+                        <field name="is_fast_ship" readonly="1"/>
+                        <field name="is_custom_label" readonly="1"/>
+                        <field name="state" readonly="1"/> <!-- Still readonly in Form -->
+                        <field name="is_converted" readonly="1"/>
+                        <field name="delivery_status"/>
                         </group>
                     </group>
                 </sheet>
@@ -166,7 +165,13 @@
             <field name="api_id"/>
             <field name="design"/>
             <field name="category"/>
+
+            <!-- Filters -->
+            <filter string="Fast Shipping" name="fast_shipping" domain="[('is_fast_ship', '=', True)]"/>
+            <filter string="Custom Label" name="custom_label" domain="[('is_custom_label', '=', True)]"/>
+
             <separator/>
+
             <!-- Update state filters to match new states -->
             <filter string="To Do" name="state_to_do" domain="[('state', '=', 'to_do')]"/>
             <filter string="In Process" name="state_in_process" domain="[('state', '=', 'in_process')]"/>

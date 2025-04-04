@@ -8,8 +8,8 @@
     "data": [
         "security/ir.model.access.csv",
         "views/stock_picking_views.xml",
-        "views/api_product_views.xml",
+        "views/api_product_views.xml"
     ],
     "installable": True,
-    "application": True,
+    "application": True
 }

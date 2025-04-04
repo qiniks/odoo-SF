@@ -32,7 +32,7 @@ class ApiProduct(models.Model):
         ('in_process', 'In Process'),
         ('done', 'Done'),
         ('delivered', 'Delivered')
-    ], string='Status', default='to_do', tracking=True, group_expand='_expand_state_groups', readonly=True)
+    ], string='Status', default='to_do', tracking=True, group_expand='_expand_state_groups')
 
 
     @api.model
@@ -42,17 +42,17 @@ class ApiProduct(models.Model):
     
     def action_set_in_process(self):
         self.ensure_one()
-        self.state = 'in_process'
+        self.write({'state': 'in_process'})  # Use write to respect workflow
         _logger.info(f"Set state to 'in_process' for {self.name}")
     
     def action_set_done(self):
         self.ensure_one()
-        self.state = 'done'
+        self.write({'state': 'done'})
         _logger.info(f"Set state to 'done' for {self.name}")
     
     def action_set_delivered(self):
         self.ensure_one()
-        self.state = 'delivered'
+        self.write({'state': 'delivered'})
         _logger.info(f"Set state to 'delivered' for {self.name}")
 
     @api.depends("is_converted")
@@ -371,6 +371,10 @@ class ApiProduct(models.Model):
             "view_mode": "tree,form",
             "target": "current",
         }
+    
+    @api.model
+    def create(self, vals):
+        return super(ApiProduct, self).create(vals)
 
     def write(self, vals):
             """Restrict updates to specific fields only"""
