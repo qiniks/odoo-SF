@@ -10,6 +10,9 @@
                 <field name="name"/>
                 <field name="date"/>
                 <field name="design"/>
+                <field name="fast_ship"/>
+                <field name="quantity"/>
+                <field name="email"/>
             </tree>
         </field>
     </record>
@@ -24,6 +27,9 @@
                 <field name="name"/>
                 <field name="date"/>
                 <field name="design"/>
+                <field name="fast_ship"/>
+                <field name="quantity"/>
+                <field name="email"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_global_click oe_kanban_color_10">
@@ -35,6 +41,9 @@
                                     <li>Design: <field name="design"/></li>
                                     <li>Date: <field name="date"/></li>
                                     <li>API ID: <field name="api_id"/></li>
+                                    <li>Fast Ship: <field name="fast_ship"/></li>
+                                    <li>Quantity: <field name="quantity"/></li>
+                                    <li>Email: <field name="email"/></li>
                                 </ul>
                             </div>
                         </div>
@@ -52,9 +61,12 @@
                 <field name="name"/>
                 <field name="api_id"/>
                 <field name="design"/>
+                <field name="email"/>
+                <filter string="Fast Ship" name="fast_ship" domain="[('fast_ship', '=', True)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Design" name="groupby_design" context="{'group_by': 'design'}"/>
                     <filter string="Date" name="groupby_date" context="{'group_by': 'date'}"/>
+                    <filter string="Fast Ship" name="groupby_fast_ship" context="{'group_by': 'fast_ship'}"/>
                 </group>
             </search>
         </field>
@@ -75,9 +87,12 @@
                         <group>
                             <field name="api_id"/>
                             <field name="date"/>
+                            <field name="fast_ship"/>
                         </group>
                         <group>
                             <field name="design"/>
+                            <field name="quantity"/>
+                            <field name="email"/>
                         </group>
                     </group>
                 </sheet>
