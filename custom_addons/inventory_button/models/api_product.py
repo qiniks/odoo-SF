@@ -53,46 +53,23 @@ class ApiProduct(models.Model):
             _logger.info(f"API response data: {api_data}")
 
         except (requests.exceptions.RequestException, ValueError) as e:
-            _logger.warning(f"Could not connect to API, using fallback data: {str(e)}")
-            # Fallback data in case the API is not available
-            api_data = {
-                "status": "success",
-                "data": [
-                    {
-                        "id": 1,
-                        "product": "Shirt",
-                        "date": "2025-04-01",
-                        "design": "Modern",
-                        "fastShip": "True",
-                        "quantity": 10,
-                        "mail": "user123@gmail.com",
-                    },
-                    {
-                        "id": 2,
-                        "product": "T-Shirt",
-                        "date": "2025-04-02",
-                        "design": "Classic",
-                        "fastShip": "False",
-                        "quantity": 5,
-                        "mail": "user456@yahoo.com",
-                    },
-                    {
-                        "id": 3,
-                        "product": "Shirt",
-                        "date": "2025-04-03",
-                        "design": "Minimal",
-                        "fastShip": "True",
-                        "quantity": 3,
-                        "mail": "user789@hotmail.com",
-                    },
-                ],
+            _logger.error(f"Could not connect to API: {str(e)}")
+            return {
+                "type": "ir.actions.client",
+                "tag": "display_notification",
+                "params": {
+                    "title": "API Connection Error",
+                    "message": f"Could not connect to API: {str(e)}",
+                    "sticky": True,
+                    "type": "danger",
+                },
             }
 
         if api_data.get("status") == "success" and "data" in api_data:
             try:
-                # First clear existing products
-                existing_products = self.search([])
-                existing_products.unlink()
+                # Track how many products were added and updated
+                added_count = 0
+                updated_count = 0
 
                 for product_data in api_data["data"]:
                     # Make sure we have a valid product name
@@ -104,33 +81,41 @@ class ApiProduct(models.Model):
                         continue
 
                     try:
-                        # Handle the new API response format - use 'product' instead of 'name'
-                        api_product = self.create(
-                            {
-                                "api_id": product_data.get("id"),
-                                "name": product_name,  # Use product name directly
-                                "date": product_data.get("date"),
-                                "design": product_data.get("design", ""),
-                                "fast_ship": product_data.get("fastShip") == "True",
-                                "quantity": product_data.get("quantity", 1),
-                                "email": product_data.get("mail", ""),
-                            }
+                        # Check if a product with the same API ID already exists
+                        api_id = product_data.get("id")
+                        existing_product = self.search(
+                            [("api_id", "=", api_id)], limit=1
                         )
 
-                        # Log the new product data
-                        _logger.info(
-                            f"Created API product: {api_product.name}, ID: {api_product.api_id}"
-                        )
+                        product_values = {
+                            "api_id": api_id,
+                            "name": product_name,
+                            "date": product_data.get("date"),
+                            "design": product_data.get("design", ""),
+                            "fast_ship": product_data.get("fastShip") == "True",
+                            "quantity": product_data.get("quantity", 1),
+                            "email": product_data.get("mail", ""),
+                        }
+
+                        if not existing_product:
+                            # Create new product
+                            api_product = self.create(product_values)
+                            _logger.info(
+                                f"Created API product: {api_product.name}, ID: {api_product.api_id}"
+                            )
+                            added_count += 1
 
                     except Exception as e:
-                        _logger.error(f"Error creating API product: {e}")
+                        _logger.error(f"Error processing API product: {e}")
 
+                # Update success message to show counts
+                message = f"API products imported successfully: {added_count} added, {updated_count} updated"
                 return {
                     "type": "ir.actions.client",
                     "tag": "display_notification",
                     "params": {
                         "title": "API Import",
-                        "message": "API products imported successfully",
+                        "message": message,
                         "sticky": False,
                         "type": "success",
                     },
