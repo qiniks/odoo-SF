@@ -5,55 +5,55 @@ from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
-data = [
-    {"id": 1, "name": "T-Shirt", "date": "2025-03-01", "design": "Modern"},
-    {"id": 2, "name": "Shirt", "date": "2025-03-02", "design": "Classic"},
-    {"id": 3, "name": "T-Shirt", "date": "2025-03-03", "design": "Minimal"},
-    {"id": 4, "name": "Shirt", "date": "2025-03-04", "design": "Vintage"},
-    {"id": 5, "name": "T-Shirt", "date": "2025-03-05", "design": "Abstract"},
-    {"id": 6, "name": "Shirt", "date": "2025-03-06", "design": "Geometric"},
-    {"id": 7, "name": "T-Shirt", "date": "2025-03-07", "design": "Floral"},
-    {"id": 8, "name": "Shirt", "date": "2025-03-08", "design": "Industrial"},
-    {"id": 9, "name": "T-Shirt", "date": "2025-03-09", "design": "Scandinavian"},
-    {"id": 10, "name": "Shirt", "date": "2025-03-10", "design": "Bohemian"},
-    {"id": 11, "name": "T-Shirt", "date": "2025-03-11", "design": "Rustic"},
-    {"id": 12, "name": "Shirt", "date": "2025-03-12", "design": "Contemporary"},
-    {"id": 13, "name": "T-Shirt", "date": "2025-03-13", "design": "Eclectic"},
-    {"id": 14, "name": "Shirt", "date": "2025-03-14", "design": "Art Deco"},
-    {"id": 15, "name": "T-Shirt", "date": "2025-03-15", "design": "Retro"},
-    {"id": 16, "name": "Shirt", "date": "2025-03-16", "design": "Futuristic"},
-    {"id": 17, "name": "T-Shirt", "date": "2025-03-17", "design": "Baroque"},
-    {"id": 18, "name": "Shirt", "date": "2025-03-18", "design": "Gothic"},
-    {"id": 19, "name": "T-Shirt", "date": "2025-03-19", "design": "Tropical"},
-    {"id": 20, "name": "Shirt", "date": "2025-03-20", "design": "Nautical"},
-    {"id": 21, "name": "T-Shirt", "date": "2025-03-21", "design": "Urban"},
-    {"id": 22, "name": "Shirt", "date": "2025-03-22", "design": "Traditional"},
-    {"id": 23, "name": "T-Shirt", "date": "2025-03-23", "design": "Mid-Century"},
-    {"id": 24, "name": "Shirt", "date": "2025-03-24", "design": "Pop Art"},
-    {"id": 25, "name": "T-Shirt", "date": "2025-03-25", "design": "Country"},
-    {"id": 26, "name": "Shirt", "date": "2025-03-26", "design": "Shabby Chic"},
-    {"id": 27, "name": "T-Shirt", "date": "2025-03-27", "design": "Oriental"},
-    {"id": 28, "name": "Shirt", "date": "2025-03-28", "design": "Mediterranean"},
-    {"id": 29, "name": "T-Shirt", "date": "2025-03-29", "design": "Victorian"},
-    {"id": 30, "name": "Shirt", "date": "2025-03-30", "design": "Zen"},
-]
-
-
 class ApiProduct(models.Model):
     _name = "api.product"
     _description = "API Product Data"
-    _order = "is_converted, name"  # Default sort by conversion status then name
+    _order = "is_fast_ship desc, quantity desc, is_custom_label desc, name"
 
-    api_id = fields.Integer("API ID", required=True)
-    name = fields.Char("Name", required=True)
-    date = fields.Date("Date")
-    design = fields.Char("Design")
-    is_converted = fields.Boolean("Converted to Delivery", default=False)
-    status_label = fields.Char("Status", compute="_compute_status_label", store=False)
-    # New field for delivery status
-    delivery_status = fields.Char(
-        "Delivery Status", compute="_compute_delivery_status", store=False
-    )
+    api_id = fields.Integer("API ID", required=True, readonly=True)
+    name = fields.Char("Name", required=True, readonly=True)
+    date = fields.Date("Date", readonly=True)
+    design = fields.Char("Design", readonly=True)
+    is_fast_ship = fields.Boolean("Fast Shipping", readonly=True)
+    quantity = fields.Integer("Quantity", readonly=True)
+    is_custom_label = fields.Boolean("Custom Label", readonly=True)
+    is_converted = fields.Boolean("Converted", default=False, readonly=True)
+    status_label = fields.Char("Status", compute="_compute_status_label", store=False, readonly=True)
+    delivery_status = fields.Char("Delivery Status", compute="_compute_delivery_status", store=False)
+
+    category = fields.Selection([
+        ('clothing', 'Clothing'),
+        ('accessories', 'Accessories'),
+        ('other', 'Other')
+    ], string='Category', default='clothing', readonly=True)
+
+    state = fields.Selection([
+        ('to_do', 'To Do'),
+        ('in_process', 'In Process'),
+        ('done', 'Done'),
+        ('delivered', 'Delivered')
+    ], string='Status', default='to_do', tracking=True, group_expand='_expand_state_groups', readonly=True)
+
+
+    @api.model
+    def _expand_state_groups(self, states, domain, order):
+        """Force display of all states in the specified order"""
+        return ['to_do', 'in_process', 'done', 'delivered']
+    
+    def action_set_in_process(self):
+        self.ensure_one()
+        self.state = 'in_process'
+        _logger.info(f"Set state to 'in_process' for {self.name}")
+    
+    def action_set_done(self):
+        self.ensure_one()
+        self.state = 'done'
+        _logger.info(f"Set state to 'done' for {self.name}")
+    
+    def action_set_delivered(self):
+        self.ensure_one()
+        self.state = 'delivered'
+        _logger.info(f"Set state to 'delivered' for {self.name}")
 
     @api.depends("is_converted")
     def _compute_status_label(self):
@@ -74,32 +74,30 @@ class ApiProduct(models.Model):
     @api.model
     def fetch_and_store_api_data(self):
         """Fetch data from local API and store it in the database"""
+        _logger.info("Starting fetch_and_store_api_data")
         try:
-            # Using the API through Docker host
             api_url = "http://host.docker.internal:8000/api/get_data"
+            _logger.info(f"Attempting to fetch data from API: {api_url}")
             try:
                 response = requests.get(api_url, timeout=10)
-                print("API response", response)
-
+                _logger.warning("*** The response is 200, getting data from API ***")
                 if response.status_code == 200:
                     data = response.json()
+                    _logger.info(f"API returned data: {data}")
                     if data.get("status") == "success":
+                        _logger.info(f"Returning data in fetch_and_store_api_data: {data}")
                         return self._process_api_data(data)
-
-                # If we reach here, the API request failed or returned unsuccessful status
-                _logger.warning(
-                    "API request failed. Using local JSON file as fallback."
-                )
+                
+                _logger.warning("API request failed or invalid response. Falling back to local JSON.")
                 return self._fetch_from_local_json()
 
             except requests.RequestException as e:
-                _logger.error("API request error: %s", str(e))
-                # API request failed, use local JSON file
-                _logger.info("Using local JSON file as fallback")
+                _logger.error(f"API request error: {str(e)}")
+                _logger.info("*** The response is not valid, not getting data from API ***")
                 return self._fetch_from_local_json()
 
         except Exception as e:
-            _logger.error("API processing error: %s", str(e))
+            _logger.error(f"API processing error: {str(e)}")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -113,26 +111,17 @@ class ApiProduct(models.Model):
 
     def _fetch_from_local_json(self):
         """Fetch a random selection of 1-5 items from the local data array"""
+        _logger.info("Entering _fetch_from_local_json")
         try:
             import random
-
-            # Randomly select 1 to 5 items from the data array
+            # Note: 'data' is not defined here; assuming it's a placeholder for a local array
+            # Replace with actual data source if available
+            data = []  # Placeholder; replace with your local data source
             num_items = random.randint(1, 5)
-            # Shuffle a copy of the data array and take the first num_items elements
+            _logger.info(f"Selecting {num_items} random items from local data")
             selected_data = random.sample(data, min(num_items, len(data)))
-
-            _logger.info(
-                f"Using {num_items} random items from local data array as fallback"
-            )
-
-            # Create a proper structure for the data
-            local_data = {
-                "status": "success",
-                "source": "local random",
-                "data": selected_data,
-            }
-
-            return self._process_api_data(local_data)
+            _logger.info(f"Selected local data: {selected_data}")
+            return self._process_api_data(selected_data)
         except Exception as e:
             _logger.error(f"Error processing local data array: {str(e)}")
             return {
@@ -147,33 +136,49 @@ class ApiProduct(models.Model):
             }
 
     def _process_api_data(self, data):
-        """Process API data and create products"""
-        products = data.get("data", [])
+        """Process API data and create or update products"""
+        _logger.info("*** Processing api data method _process_api_data ***")
+        if isinstance(data, list):
+            _logger.info("Data is a list (local source)")
+            products = data
+        else:
+            _logger.info("*** The data is API response method: _process_api_data ***")
+            products = data.get("data", [])
+        
         created_count = 0
-
+        updated_count = 0
+        _logger.info(f"Got data to process: {products}")
+    
         for product in products:
-            # Check if product already exists
             existing = self.search([("api_id", "=", product.get("id"))])
+            vals = {
+                "api_id": product.get("id"),
+                "name": product.get("name"),
+                "date": product.get("date"),
+                "design": product.get("design"),
+                "quantity": int(product.get("quantity")),
+                "is_fast_ship": bool(product.get("is_fast_ship", False)),
+                "is_custom_label": bool(product.get("is_custom_label", False))
+            }
             if not existing:
-                # Create new product record
-                self.create(
-                    {
-                        "api_id": product.get("id"),
-                        "name": product.get("name"),
-                        "date": product.get("date"),
-                        "design": product.get("design"),
-                    }
-                )
+                _logger.info(f"*** Creating new record with vals: {vals} ***")
+                record = self.create(vals)
+                _logger.info(f"Created record with ID {record.id}, quantity: {record.quantity}")
                 created_count += 1
-
-        # Return notification
-        source = "API" if data.get("source") != "local" else "local file"
+            else:
+                _logger.info(f"*** Updating existing record with api_id {product.get('id')} with vals: {vals} ***")
+                existing.write(vals)
+                _logger.info(f"Updated record with ID {existing.id}, quantity: {existing.quantity}")
+                updated_count += 1
+    
+        source = "API" if isinstance(data, dict) and data.get("source") != "local" else "local file"
+        _logger.info(f"Processed {created_count} new and {updated_count} updated records from {source}")
         return {
             "type": "ir.actions.client",
             "tag": "display_notification",
             "params": {
                 "title": "Success",
-                "message": f"Successfully fetched {created_count} new products from {source}",
+                "message": f"Successfully fetched {created_count} new and updated {updated_count} existing products from {source}",
                 "sticky": False,
                 "type": "success",
             },
@@ -182,8 +187,10 @@ class ApiProduct(models.Model):
     def create_delivery_order(self):
         """Create a delivery order for a single API product"""
         self.ensure_one()
-
+        _logger.info(f"Creating delivery order for {self.name} (api_id: {self.api_id})")
+        
         if self.is_converted:
+            _logger.warning(f"Product {self.name} already converted")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -195,9 +202,9 @@ class ApiProduct(models.Model):
                 },
             }
 
-        # Get warehouse for outgoing shipments
         warehouse = self.env["stock.warehouse"].search([], limit=1)
         if not warehouse:
+            _logger.error("No warehouse found")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -209,25 +216,21 @@ class ApiProduct(models.Model):
                 },
             }
 
-        # Create a product in Odoo's product catalog if it doesn't exist
-        product = self.env["product.product"].search(
-            [("name", "=", self.name)], limit=1
-        )
+        product = self.env["product.product"].search([("name", "=", self.name)], limit=1)
         if not product:
-            product = self.env["product.product"].create(
-                {
-                    "name": self.name,
-                    "type": "product",
-                    "categ_id": self.env.ref("product.product_category_all").id,
-                }
-            )
+            _logger.info(f"Creating new product: {self.name}")
+            product = self.env["product.product"].create({
+                "name": self.name,
+                "type": "product",
+                "categ_id": self.env.ref("product.product_category_all").id,
+            })
+            _logger.info(f"Created product with ID {product.id}")
 
-        # Create a stock picking (delivery order)
         picking_type = self.env["stock.picking.type"].search(
             [("warehouse_id", "=", warehouse.id), ("code", "=", "outgoing")], limit=1
         )
-
         if not picking_type:
+            _logger.error("No outgoing picking type found")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -239,29 +242,20 @@ class ApiProduct(models.Model):
                 },
             }
 
-        # Get explicit locations to avoid null values
-        location_src = picking_type.default_location_src_id
-        location_dest = picking_type.default_location_dest_id
-
-        # Fallback to warehouse locations if default locations are not set
-        if not location_src:
-            location_src = warehouse.lot_stock_id
+        location_src = picking_type.default_location_src_id or warehouse.lot_stock_id
+        location_dest = picking_type.default_location_dest_id or self.env.ref(
+            "stock.stock_location_customers", raise_if_not_found=False
+        )
         if not location_dest:
-            location_dest = self.env.ref(
-                "stock.stock_location_customers", raise_if_not_found=False
-            )
-            if not location_dest:
-                # Create a customer location if it doesn't exist
-                location_dest = self.env["stock.location"].create(
-                    {
-                        "name": "Customers",
-                        "usage": "customer",
-                        "company_id": self.env.company.id,
-                    }
-                )
+            _logger.info("Creating customer location")
+            location_dest = self.env["stock.location"].create({
+                "name": "Customers",
+                "usage": "customer",
+                "company_id": self.env.company.id,
+            })
 
-        # Verify we have valid locations
         if not location_src or not location_dest:
+            _logger.error("Invalid stock locations")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -274,35 +268,30 @@ class ApiProduct(models.Model):
             }
 
         try:
-            # Create the delivery order
-            picking = self.env["stock.picking"].create(
-                {
-                    "partner_id": self.env.user.partner_id.id,  # Use current user as partner
-                    "picking_type_id": picking_type.id,
-                    "location_id": location_src.id,
-                    "location_dest_id": location_dest.id,
-                    "origin": f"API Product {self.api_id}",
-                    "scheduled_date": self.date or fields.Date.today(),
-                }
-            )
+            picking = self.env["stock.picking"].create({
+                "partner_id": self.env.user.partner_id.id,
+                "picking_type_id": picking_type.id,
+                "location_id": location_src.id,
+                "location_dest_id": location_dest.id,
+                "origin": f"API Product {self.api_id}",
+                "scheduled_date": self.date or fields.Date.today(),
+            })
+            _logger.info(f"Created picking with ID {picking.id}")
 
-            # Add move line to the picking
-            self.env["stock.move"].create(
-                {
-                    "name": self.name,
-                    "product_id": product.id,
-                    "product_uom_qty": 1.0,
-                    "product_uom": product.uom_id.id,
-                    "picking_id": picking.id,
-                    "location_id": location_src.id,
-                    "location_dest_id": location_dest.id,
-                }
-            )
+            self.env["stock.move"].create({
+                "name": self.name,
+                "product_id": product.id,
+                "product_uom_qty": self.quantity,
+                "product_uom": product.uom_id.id,
+                "picking_id": picking.id,
+                "location_id": location_src.id,
+                "location_dest_id": location_dest.id,
+            })
+            _logger.info(f"Created stock move with quantity {self.quantity}")
 
-            # Mark this product as converted
             self.write({"is_converted": True})
+            _logger.info(f"Marked {self.name} as converted")
 
-            # Open the created delivery order
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "stock.picking",
@@ -324,11 +313,11 @@ class ApiProduct(models.Model):
             }
 
     def create_delivery_orders(self):
-        """Create delivery orders for multiple selected API products - one order per product"""
-        # Filter out already converted products
+        """Create delivery orders for multiple selected API products"""
+        _logger.info("Starting create_delivery_orders")
         products_to_convert = self.filtered(lambda p: not p.is_converted)
-
         if not products_to_convert:
+            _logger.warning("No products to convert")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -341,26 +330,17 @@ class ApiProduct(models.Model):
             }
 
         created_pickings = self.env["stock.picking"]
-
-        # Create individual deliveries for each product
         for api_product in products_to_convert:
             try:
                 result = api_product.create_delivery_order()
-                if (
-                    isinstance(result, dict)
-                    and result.get("res_model") == "stock.picking"
-                    and result.get("res_id")
-                ):
-                    created_pickings += self.env["stock.picking"].browse(
-                        result["res_id"]
-                    )
+                if isinstance(result, dict) and result.get("res_model") == "stock.picking" and result.get("res_id"):
+                    created_pickings += self.env["stock.picking"].browse(result["res_id"])
+                    _logger.info(f"Added picking ID {result['res_id']} to created_pickings")
             except Exception as e:
-                _logger.error(
-                    f"Error creating delivery for product {api_product.name}: {str(e)}"
-                )
+                _logger.error(f"Error creating delivery for {api_product.name}: {str(e)}")
 
-        # If no pickings created, return to the same view
         if not created_pickings:
+            _logger.warning("No delivery orders created")
             return {
                 "type": "ir.actions.client",
                 "tag": "display_notification",
@@ -372,8 +352,8 @@ class ApiProduct(models.Model):
                 },
             }
 
-        # If only one picking was created, open it directly
         if len(created_pickings) == 1:
+            _logger.info(f"Returning single picking view for ID {created_pickings.id}")
             return {
                 "type": "ir.actions.act_window",
                 "res_model": "stock.picking",
@@ -382,7 +362,7 @@ class ApiProduct(models.Model):
                 "target": "current",
             }
 
-        # If multiple pickings were created, open the list view of stock.picking with a domain filter
+        _logger.info(f"Returning multiple pickings view for IDs {created_pickings.ids}")
         return {
             "type": "ir.actions.act_window",
             "name": "Created Delivery Orders",
@@ -393,24 +373,30 @@ class ApiProduct(models.Model):
         }
 
     def write(self, vals):
-        """Override write to handle kanban drag and drop"""
-        # Check if is_converted is being changed from False to True
-        if "is_converted" in vals and vals["is_converted"]:
-            # Get records that are being converted (that weren't converted before)
-            to_convert = self.filtered(lambda r: not r.is_converted)
-
-            # Call super to perform the write operation
-            result = super(ApiProduct, self).write(vals)
-
-            # Create delivery orders for newly converted products
-            if to_convert:
-                for product in to_convert:
-                    try:
-                        product.create_delivery_order()
-                    except Exception as e:
-                        _logger.error(
-                            f"Failed to create delivery for {product.name}: {str(e)}"
-                        )
-            return result
-        else:
-            return super(ApiProduct, self).write(vals)
+            """Restrict updates to specific fields only"""
+            protected_fields = [
+                'api_id', 'name', 'date', 'design', 'quantity', 
+                'is_fast_ship', 'is_custom_label', 'category'
+            ]
+            # Check if any protected field is in vals
+            if any(field in vals for field in protected_fields):
+                _logger.warning(f"Attempt to modify protected fields: {vals}")
+                # Remove protected fields from vals to prevent changes
+                for field in protected_fields:
+                    vals.pop(field, None)
+            
+            # Handle is_converted and state updates as allowed
+            if "is_converted" in vals and vals["is_converted"]:
+                to_convert = self.filtered(lambda r: not r.is_converted)
+                result = super(ApiProduct, self).write(vals)
+                if to_convert:
+                    _logger.info(f"Converting {len(to_convert)} records")
+                    for product in to_convert:
+                        try:
+                            product.create_delivery_order()
+                            _logger.info(f"Created delivery for {product.name}")
+                        except Exception as e:
+                            _logger.error(f"Failed to create delivery for {product.name}: {str(e)}")
+                return result
+            else:
+                return super(ApiProduct, self).write(vals)

@@ -1,182 +1,272 @@
 [
-    {
-            "id": 1,
-            "name": "T-Shirt",
-            "date": "2025-03-01",
-            "design": "Modern"
-    },
-    {
-            "id": 2,
-            "name": "Shirt",
-            "date": "2025-03-02",
-            "design": "Classic"
-    },
-    {
-            "id": 3,
-            "name": "T-Shirt",
-            "date": "2025-03-03",
-            "design": "Minimal"
-    },
-    {
-            "id": 4,
-            "name": "Shirt",
-            "date": "2025-03-04",
-            "design": "Vintage"
-    },
-    {
-            "id": 5,
-            "name": "T-Shirt",
-            "date": "2025-03-05",
-            "design": "Abstract"
-    },
-    {
-            "id": 6,
-            "name": "Shirt",
-            "date": "2025-03-06",
-            "design": "Geometric"
-    },
-    {
-            "id": 7,
-            "name": "T-Shirt",
-            "date": "2025-03-07",
-            "design": "Floral"
-    },
-    {
-            "id": 8,
-            "name": "Shirt",
-            "date": "2025-03-08",
-            "design": "Industrial"
-    },
-    {
-            "id": 9,
-            "name": "T-Shirt",
-            "date": "2025-03-09",
-            "design": "Scandinavian"
-    },
-    {
-            "id": 10,
-            "name": "Shirt",
-            "date": "2025-03-10",
-            "design": "Bohemian"
-    },
-    {
-            "id": 11,
-            "name": "T-Shirt",
-            "date": "2025-03-11",
-            "design": "Rustic"
-    },
-    {
-            "id": 12,
-            "name": "Shirt",
-            "date": "2025-03-12",
-            "design": "Contemporary"
-    },
-    {
-            "id": 13,
-            "name": "T-Shirt",
-            "date": "2025-03-13",
-            "design": "Eclectic"
-    },
-    {
-            "id": 14,
-            "name": "Shirt",
-            "date": "2025-03-14",
-            "design": "Art Deco"
-    },
-    {
-            "id": 15,
-            "name": "T-Shirt",
-            "date": "2025-03-15",
-            "design": "Retro"
-    },
-    {
-            "id": 16,
-            "name": "Shirt",
-            "date": "2025-03-16",
-            "design": "Futuristic"
-    },
-    {
-            "id": 17,
-            "name": "T-Shirt",
-            "date": "2025-03-17",
-            "design": "Baroque"
-    },
-    {
-            "id": 18,
-            "name": "Shirt",
-            "date": "2025-03-18",
-            "design": "Gothic"
-    },
-    {
-            "id": 19,
-            "name": "T-Shirt",
-            "date": "2025-03-19",
-            "design": "Tropical"
-    },
-    {
-            "id": 20,
-            "name": "Shirt",
-            "date": "2025-03-20",
-            "design": "Nautical"
-    },
-    {
-            "id": 21,
-            "name": "T-Shirt",
-            "date": "2025-03-21",
-            "design": "Urban"
-    },
-    {
-            "id": 22,
-            "name": "Shirt",
-            "date": "2025-03-22",
-            "design": "Traditional"
-    },
-    {
-            "id": 23,
-            "name": "T-Shirt",
-            "date": "2025-03-23",
-            "design": "Mid-Century"
-    },
-    {
-            "id": 24,
-            "name": "Shirt",
-            "date": "2025-03-24",
-            "design": "Pop Art"
-    },
-    {
-            "id": 25,
-            "name": "T-Shirt",
-            "date": "2025-03-25",
-            "design": "Country"
-    },
-    {
-            "id": 26,
-            "name": "Shirt",
-            "date": "2025-03-26",
-            "design": "Shabby Chic"
-    },
-    {
-            "id": 27,
-            "name": "T-Shirt",
-            "date": "2025-03-27",
-            "design": "Oriental"
-    },
-    {
-            "id": 28,
-            "name": "Shirt",
-            "date": "2025-03-28",
-            "design": "Mediterranean"
-    },
-    {
-            "id": 29,
-            "name": "T-Shirt",
-            "date": "2025-03-29",
-            "design": "Victorian"
-    },
-    {
-            "id": 30,
-            "name": "Shirt",
-            "date": "2025-03-30",
-            "design": "Zen"
-    }
+  {
+      "id": 1,
+      "name": "T-Shirt",
+      "date": "2025-03-01",
+      "design": "Modern",
+      "is_fast_ship": true,
+      "quantity": 78,
+      "is_custom_label": false
+  },
+  {
+      "id": 2,
+      "name": "Shirt",
+      "date": "2025-03-02",
+      "design": "Classic",
+      "is_fast_ship": false,
+      "quantity": 20,
+      "is_custom_label": true
+  },
+  {
+      "id": 3,
+      "name": "T-Shirt",
+      "date": "2025-03-03",
+      "design": "Minimal",
+      "is_fast_ship": false,
+      "quantity": 12,
+      "is_custom_label": false
+  },
+  {
+      "id": 4,
+      "name": "Shirt",
+      "date": "2025-03-04",
+      "design": "",
+      "is_fast_ship": true,
+      "quantity": 93,
+      "is_custom_label": false
+  },
+  {
+      "id": 5,
+      "name": "T-Shirt",
+      "date": "2025-03-05",
+      "design": "Abstract",
+      "is_fast_ship": false,
+      "quantity": 25,
+      "is_custom_label": false
+  },
+  {
+      "id": 6,
+      "name": "Shirt",
+      "date": "2025-03-06",
+      "design": "Geometric",
+      "is_fast_ship": true,
+      "quantity": 58,
+      "is_custom_label": true
+  },
+  {
+      "id": 7,
+      "name": "T-Shirt",
+      "date": "2025-03-07",
+      "design": "Floral",
+      "is_fast_ship": false,
+      "quantity": 47,
+      "is_custom_label": false
+  },
+  {
+      "id": 8,
+      "name": "Shirt",
+      "date": "2025-03-08",
+      "design": "Industrial",
+      "is_fast_ship": true,
+      "quantity": 65,
+      "is_custom_label": true
+  },
+  {
+      "id": 9,
+      "name": "T-Shirt",
+      "date": "2025-03-09",
+      "design": "Scandinavian",
+      "is_fast_ship": false,
+      "quantity": 15,
+      "is_custom_label": true
+  },
+  {
+      "id": 10,
+      "name": "Shirt",
+      "date": "2025-03-10",
+      "design": "Bohemian",
+      "is_fast_ship": true,
+      "quantity": 82,
+      "is_custom_label": false
+  },
+  {
+      "id": 11,
+      "name": "T-Shirt",
+      "date": "2025-03-11",
+      "design": "Rustic",
+      "is_fast_ship": false,
+      "quantity": 38,
+      "is_custom_label": false
+  },
+  {
+      "id": 12,
+      "name": "Shirt",
+      "date": "2025-03-12",
+      "design": "Contemporary",
+      "is_fast_ship": true,
+      "quantity": 92,
+      "is_custom_label": false
+  },
+  {
+      "id": 13,
+      "name": "T-Shirt",
+      "date": "2025-03-13",
+      "design": "Eclectic",
+      "is_fast_ship": false,
+      "quantity": 22,
+      "is_custom_label": true
+  },
+  {
+      "id": 14,
+      "name": "Shirt",
+      "date": "2025-03-14",
+      "design": "Art Deco",
+      "is_fast_ship": false,
+      "quantity": 16,
+      "is_custom_label": true
+  },
+  {
+      "id": 15,
+      "name": "T-Shirt",
+      "date": "2025-03-15",
+      "design": "Retro",
+      "is_fast_ship": false,
+      "quantity": 18,
+      "is_custom_label": false
+  },
+  {
+      "id": 16,
+      "name": "Shirt",
+      "date": "2025-03-16",
+      "design": "Futuristic",
+      "is_fast_ship": true,
+      "quantity": 85,
+      "is_custom_label": true
+  },
+  {
+      "id": 17,
+      "name": "T-Shirt",
+      "date": "2025-03-17",
+      "design": "Baroque",
+      "is_fast_ship": false,
+      "quantity": 30,
+      "is_custom_label": false
+  },
+  {
+      "id": 18,
+      "name": "Shirt",
+      "date": "2025-03-18",
+      "design": "Gothic",
+      "is_fast_ship": true,
+      "quantity": 56,
+      "is_custom_label": false
+  },
+  {
+      "id": 19,
+      "name": "T-Shirt",
+      "date": "2025-03-19",
+      "design": "Tropical",
+      "is_fast_ship": false,
+      "quantity": 45,
+      "is_custom_label": false
+  },
+  {
+      "id": 20,
+      "name": "Shirt",
+      "date": "2025-03-20",
+      "design": "Nautical",
+      "is_fast_ship": true,
+      "quantity": 78,
+      "is_custom_label": false
+  },
+  {
+      "id": 21,
+      "name": "T-Shirt",
+      "date": "2025-03-21",
+      "design": "Urban",
+      "is_fast_ship": false,
+      "quantity": 24,
+      "is_custom_label": true
+  },
+  {
+      "id": 22,
+      "name": "Shirt",
+      "date": "2025-03-22",
+      "design": "Traditional",
+      "is_fast_ship": true,
+      "quantity": 69,
+      "is_custom_label": false
+  },
+  {
+      "id": 23,
+      "name": "T-Shirt",
+      "date": "2025-03-23",
+      "design": "Mid-Century",
+      "is_fast_ship": false,
+      "quantity": 12,
+      "is_custom_label": true
+  },
+  {
+      "id": 24,
+      "name": "Shirt",
+      "date": "2025-03-24",
+      "design": "Pop Art",
+      "is_fast_ship": false,
+      "quantity": 38,
+      "is_custom_label": false
+  },
+  {
+      "id": 25,
+      "name": "T-Shirt",
+      "date": "2025-03-25",
+      "design": "Country",
+      "is_fast_ship": true,
+      "quantity": 61,
+      "is_custom_label": false
+  },
+  {
+      "id": 26,
+      "name": "Shirt",
+      "date": "2025-03-26",
+      "design": "Shabby Chic",
+      "is_fast_ship": true,
+      "quantity": 56,
+      "is_custom_label": true
+  },
+  {
+      "id": 27,
+      "name": "T-Shirt",
+      "date": "2025-03-27",
+      "design": "Oriental",
+      "is_fast_ship": false,
+      "quantity": 41,
+      "is_custom_label": false
+  },
+  {
+      "id": 28,
+      "name": "Shirt",
+      "date": "2025-03-28",
+      "design": "Mediterranean",
+      "is_fast_ship": true,
+      "quantity": 82,
+      "is_custom_label": false
+  },
+  {
+      "id": 29,
+      "name": "T-Shirt",
+      "date": "2025-03-29",
+      "design": "Victorian",
+      "is_fast_ship": true,
+      "quantity": 95,
+      "is_custom_label": false
+  },
+  {
+      "id": 30,
+      "name": "Shirt",
+      "date": "2025-03-30",
+      "design": "Zen",
+      "is_fast_ship": true,
+      "quantity": 75,
+      "is_custom_label": false
+  }
 ]
