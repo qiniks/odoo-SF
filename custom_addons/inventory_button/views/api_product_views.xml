@@ -22,7 +22,7 @@ action = {
 
     <!-- Menu item for Random Deliveries (from stock_picking_views.xml) -->
     <menuitem id="menu_random_deliveries"
-              name="Random Deliveries"
+              name="Fetch data from API"
               parent="stock.menu_stock_root"
               action="action_generate_random_deliveries"
               sequence="15"/>
@@ -80,6 +80,18 @@ action = {
                                 <strong class="o_kanban_record_title">
                                     <field name="name"/>
                                 </strong>
+                                <!-- Tags section -->
+                                <div class="o_kanban_tags_section mt-1 mb-1">
+                                    <span t-if="record.fast_ship.raw_value" class="badge rounded-pill text-bg-danger">
+                                        <strong>Urgent</strong>
+                                    </span>
+                                    <span t-if="record.quantity.raw_value > 10" class="badge rounded-pill text-bg-warning">
+                                        <strong>Bulk Order</strong>
+                                    </span>
+                                    <span t-if="record.design.raw_value" class="badge rounded-pill text-bg-primary">
+                                        <strong>Custom</strong>
+                                    </span>
+                                </div>
                                 <ul>
                                     <li>Design: <field name="design"/></li>
                                     <li>Date: <field name="date"/></li>
