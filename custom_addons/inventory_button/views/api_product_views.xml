@@ -5,19 +5,11 @@
         <field name="name">api.product.tree</field>
         <field name="model">api.product</field>
         <field name="arch" type="xml">
-            <tree decoration-muted="is_converted" decoration-success="is_converted" default_order="is_converted, name">
+            <tree default_order="name">
                 <field name="api_id"/>
                 <field name="name"/>
                 <field name="date"/>
                 <field name="design"/>
-                <!-- Status fields -->
-                <field name="delivery_status" string="Delivery Status"/>
-                <field name="is_converted" invisible="1"/>
-                <button name="create_delivery_order"
-                        string="Create Delivery"
-                        type="object"
-                        class="btn-primary"
-                        attrs="{'invisible': [('is_converted', '=', True)]}"/>
             </tree>
         </field>
     </record>
@@ -27,39 +19,23 @@
         <field name="name">api.product.kanban</field>
         <field name="model">api.product</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="is_converted" quick_create="false" class="o_kanban_small_column" records_draggable="true">
+            <kanban quick_create="false" class="o_kanban_small_column" records_draggable="true">
                 <field name="api_id"/>
                 <field name="name"/>
                 <field name="date"/>
                 <field name="design"/>
-                <field name="is_converted"/>
-                <field name="delivery_status"/>
-                <progressbar field="is_converted" colors='{"False": "success", "True": "warning"}'/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_global_click {{ record.is_converted.raw_value ? 'oe_kanban_color_3' : 'oe_kanban_color_10' }}">
+                        <div t-attf-class="oe_kanban_global_click oe_kanban_color_10">
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">
                                     <field name="name"/>
                                 </strong>
-                                <div class="o_kanban_tags_section mb-2">
-                                    <span t-attf-class="badge {{ record.is_converted.raw_value ? 'bg-success' : 'bg-primary' }}">
-                                        <field name="delivery_status"/>
-                                    </span>
-                                </div>
                                 <ul>
                                     <li>Design: <field name="design"/></li>
                                     <li>Date: <field name="date"/></li>
                                     <li>API ID: <field name="api_id"/></li>
                                 </ul>
-                                <div t-if="!record.is_converted.raw_value" class="mt-2">
-                                    <button name="create_delivery_order" type="object" class="btn btn-primary btn-sm">
-                                        Create Delivery
-                                    </button>
-                                </div>
-                                <div t-if="record.is_converted.raw_value" class="text-muted fst-italic">
-                                    Delivery created
-                                </div>
                             </div>
                         </div>
                     </t>
@@ -76,11 +52,7 @@
                 <field name="name"/>
                 <field name="api_id"/>
                 <field name="design"/>
-                <separator/>
-                <filter string="Ready for Delivery" name="not_converted" domain="[('is_converted', '=', False)]"/>
-                <filter string="Converted to Delivery" name="converted" domain="[('is_converted', '=', True)]"/>
                 <group expand="0" string="Group By">
-                    <filter string="Conversion Status" name="groupby_status" context="{'group_by': 'is_converted'}"/>
                     <filter string="Design" name="groupby_design" context="{'group_by': 'design'}"/>
                     <filter string="Date" name="groupby_date" context="{'group_by': 'date'}"/>
                 </group>
@@ -93,24 +65,11 @@
         <field name="model">api.product</field>
         <field name="arch" type="xml">
             <form>
-                <header>
-                    <button name="create_delivery_order" 
-                            string="Create Delivery Order" 
-                            type="object" 
-                            class="btn-primary"
-                            attrs="{'invisible': [('is_converted', '=', True)]}"/>
-                </header>
                 <sheet>
                     <div class="oe_title">
                         <h1>
                             <field name="name" placeholder="Product Name"/>
                         </h1>
-                        <h3 attrs="{'invisible': [('is_converted', '=', False)]}">
-                            <span class="badge badge-success">Converted to Delivery</span>
-                        </h3>
-                        <h3 attrs="{'invisible': [('is_converted', '=', True)]}">
-                            <span class="badge badge-info">Ready for Delivery</span>
-                        </h3>
                     </div>
                     <group>
                         <group>
@@ -119,7 +78,6 @@
                         </group>
                         <group>
                             <field name="design"/>
-                            <field name="is_converted"/>
                         </group>
                     </group>
                 </sheet>
@@ -131,7 +89,6 @@
         <field name="name">API Products</field>
         <field name="res_model">api.product</field>
         <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'search_default_not_converted': 1}</field>
     </record>
     
     <!-- Multi-record action button for API Products -->
