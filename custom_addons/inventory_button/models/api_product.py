@@ -21,6 +21,27 @@ class ApiProduct(models.Model):
     quantity = fields.Integer("Quantity", default=1)
     email = fields.Char("Email")
 
+    # New state field with selection options
+    state = fields.Selection(
+        [
+            ("all_products", "All Products"),
+            ("processing", "Processing"),
+            ("approving", "Approving"),
+            ("not_approved", "Not Approved"),
+            ("done", "Done"),
+        ],
+        string="Status",
+        default="all_products",
+        tracking=True,
+    )
+
+    @api.model
+    def create(self, vals):
+        # Set default state if not provided
+        if "state" not in vals:
+            vals["state"] = "all_products"
+        return super(ApiProduct, self).create(vals)
+
     @api.model
     def fetch_and_store_api_data(self):
         """Fetch data from local API and store it in the database"""
