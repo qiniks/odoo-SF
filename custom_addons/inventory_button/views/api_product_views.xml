@@ -72,7 +72,8 @@ action = {
                    records_draggable="true"
                    on_create="quick_create"
                    column_order="all_products,processing,approving,not_approved,done"
-                   groups_limit="5">
+                   groups_limit="5"
+                   default_order="priority desc, name">
                 <field name="api_id"/>
                 <field name="name"/>
                 <field name="date"/>
@@ -81,6 +82,7 @@ action = {
                 <field name="quantity"/>
                 <field name="email"/>
                 <field name="state"/>
+                <field name="priority"/>
                 <progressbar field="state" colors='{"all_products": "success", "processing": "info", "approving": "warning", "not_approved": "danger", "done": "muted"}'/>
                 <templates>
                     <t t-name="kanban-box">

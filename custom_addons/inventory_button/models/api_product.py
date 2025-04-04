@@ -35,6 +35,29 @@ class ApiProduct(models.Model):
         tracking=True,
     )
 
+    # Priority field for sorting (computed based on tags)
+    priority = fields.Integer(
+        string="Priority", compute="_compute_priority", store=True
+    )
+
+    @api.depends("fast_ship", "quantity", "design")
+    def _compute_priority(self):
+        for record in self:
+            # Default priority = 0
+            priority = 0
+
+            # Priority 3 (highest): Urgent (fast_ship)
+            if record.fast_ship:
+                priority = 10
+            # Priority 2: Bulk Order (quantity > 10)
+            elif record.quantity > 10:
+                priority = 2
+            # Priority 1: Custom design
+            elif record.design:
+                priority = 1
+
+            record.priority = priority
+
     @api.model
     def create(self, vals):
         # Set default state if not provided
