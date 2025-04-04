@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 import json
 import random
 from datetime import datetime, timedelta
@@ -73,7 +74,7 @@ def generate_random_shirt_data(count=5):
 
     for i in range(1, count + 1):
         # Generate random id (simulating database increment)
-        item_id = random.randint(1, 10000000)
+        item_id = random.randint(1, 1000)
 
         # Randomly select product type
         product_type = random.choice(["Shirt", "T-Shirt"])
@@ -86,7 +87,7 @@ def generate_random_shirt_data(count=5):
         design = random.choice(design_styles)
 
         # Random fastShip boolean (as string)
-        fast_ship = random.choice(["True", "False"])
+        fast_ship = random.choice(["True", "False", "Fasle"])
 
         # Random quantity between 1 and 20
         quantity = random.randint(1, 20)
@@ -120,9 +121,9 @@ async def get_data():
         count = random.randint(1, 5)
         data = generate_random_shirt_data(count)
 
-        return {"status": "success", "data": data}
+        return JSONResponse(content={"status": "success", "data": data})
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return JSONResponse(content={"status": "error", "message": str(e)})
 
 
 # API endpoint that returns a specific amount of data
@@ -137,14 +138,16 @@ async def get_random_data(amount: int):
 
         data = generate_random_shirt_data(amount)
 
-        return {"status": "success", "data": data}
+        return JSONResponse(content={"status": "success", "data": data})
     except Exception as e:
-        return {"status": "error", "message": str(e)}
+        return JSONResponse(content={"status": "error", "message": str(e)})
 
 
 # Root endpoint for testing
 @app.get("/")
 async def root():
-    return {
-        "message": "Shirt API is running. Use /api/get_data to get random shirt data."
-    }
+    return JSONResponse(
+        content={
+            "message": "Shirt API is running. Use /api/get_data to get random shirt data."
+        }
+    )
