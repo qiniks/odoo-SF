@@ -84,24 +84,24 @@ action = {
                 <progressbar field="state" colors='{"all_products": "success", "processing": "info", "approving": "warning", "not_approved": "danger", "done": "muted"}'/>
                 <templates>
                     <t t-name="kanban-box">
-                        <div t-attf-class="oe_kanban_global_click oe_kanban_card oe_kanban_color_10">
+                        <div t-attf-class="oe_kanban_global_click oe_kanban_card">
                             <div class="oe_kanban_details">
                                 <strong class="o_kanban_record_title">
                                     <field name="name"/>
                                 </strong>
                                 <!-- Tags section -->
-                                <div class="o_kanban_tags_section mt-1 mb-1">
-                                    <span t-if="record.fast_ship.raw_value" class="badge rounded-pill text-bg-danger">
+                                <div class="o_kanban_tags_section mt-1 mb-2">
+                                    <span t-if="record.fast_ship.raw_value" class="badge rounded-pill text-bg-danger  me-1">
                                         <strong>Urgent</strong>
                                     </span>
-                                    <span t-if="record.quantity.raw_value > 10" class="badge rounded-pill text-bg-warning">
+                                    <span t-if="record.quantity.raw_value > 10" class="badge rounded-pill text-bg-warning  me-1">
                                         <strong>Bulk Order</strong>
                                     </span>
-                                    <span t-if="record.design.raw_value" class="badge rounded-pill text-bg-primary">
+                                    <span t-if="record.design.raw_value" class="badge rounded-pill text-bg-primary  me-1">
                                         <strong>Custom</strong>
                                     </span>
                                 </div>
-                                <ul>
+                                <ul class="mt-2 ps-0" style="list-style-type: none;"> 
                                     <li>Design: <field name="design"/></li>
                                     <li>Date: <field name="date"/></li>
                                     <li>API ID: <field name="api_id"/></li>
