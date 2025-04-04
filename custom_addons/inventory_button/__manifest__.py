@@ -1,13 +1,12 @@
 {
-    "name": "Inventory Header Button",
+    "name": "ORM Managment",
     "version": "16.0.1.0.0",
     "category": "Inventory",
-    "summary": "Adds a custom button to the inventory header",
-    "author": "Your Name",
+    "summary": "Add custom button to fetch data from API and store in database",
+    "author": "AIT solutions",
     "depends": ["base", "stock"],
     "data": [
         "security/ir.model.access.csv",
-        "views/stock_picking_views.xml",
         "views/api_product_views.xml",
     ],
     "installable": True,
