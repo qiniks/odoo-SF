@@ -43,18 +43,19 @@ class ApiProduct(models.Model):
     @api.depends("fast_ship", "quantity", "design")
     def _compute_priority(self):
         for record in self:
+            _logger.info(f"Computing priority for record: {record}")
             # Default priority = 0
             priority = 0
 
             # Priority 3 (highest): Urgent (fast_ship)
             if record.fast_ship:
-                priority = 10
+                priority += 50
             # Priority 2: Bulk Order (quantity > 10)
-            elif record.quantity > 10:
-                priority = 2
+            if record.quantity > 10:
+                priority += 20
             # Priority 1: Custom design
-            elif record.design:
-                priority = 1
+            if record.design:
+                priority += 10
 
             record.priority = priority
 
@@ -81,7 +82,7 @@ class ApiProduct(models.Model):
                 try:
                     url = f"{hostname}/api/get_data"
                     _logger.info(f"Trying to connect to API at: {url}")
-                    response = requests.get(url, timeout=3)
+                    response = requests.get(url, timeout=30)
                     if response.status_code == 200:
                         _logger.info(f"Successfully connected to API at: {url}")
                         break
