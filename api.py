@@ -53,8 +53,9 @@ def generate_random_shirt_data(count=5):
         "Mediterranean",
         "Victorian",
         "Zen",
-        "",
-    ]
+    ] + [
+        ""
+    ] * 10  # Adding empty designs
 
     # Email domains
     email_domains = [
@@ -87,10 +88,16 @@ def generate_random_shirt_data(count=5):
         design = random.choice(design_styles)
 
         # Random fastShip boolean (as string)
-        fast_ship = random.choice(["True", "False", "Fasle"])
-
-        # Random quantity between 1 and 20
-        quantity = random.randint(1, 20)
+        fast_ship = random.choice(["True"] + ["Fasle"] * 9)
+        # Random quantity with higher numbers being less likely
+        quantity_weights = {i: max(1, 20 - i) for i in range(1, 21)}
+        quantity_options = list(quantity_weights.keys())
+        quantity_probabilities = list(quantity_weights.values())
+        total_weight = sum(quantity_probabilities)
+        quantity_probabilities = [w / total_weight for w in quantity_probabilities]
+        quantity = random.choices(
+            quantity_options, weights=quantity_probabilities, k=1
+        )[0]
 
         # Generate random email
         email_prefix = f"user{random.randint(100, 999)}"
@@ -118,7 +125,8 @@ def generate_random_shirt_data(count=5):
 async def get_data():
     try:
         # Generate random number of items between 1 and 5
-        count = random.randint(1, 5)
+        count = random.randint(1, 10)
+        print(f"Generating {count} random shirt data items.")
         data = generate_random_shirt_data(count)
 
         return JSONResponse(content={"status": "success", "data": data})
