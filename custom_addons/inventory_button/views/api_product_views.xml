@@ -84,7 +84,7 @@ action = {
                 <field name="email"/>
                 <field name="state"/>
                 <field name="priority"/>
-                <progressbar field="state" colors='{"all_products": "success", "processing": "info", "approving": "warning", "not_approved": "danger", "done": "muted"}'/>
+                <progressbar field="state" colors='{"all_products": "success", "processing": "info", "approving": "warning", "done": "muted"}'/>
                 <templates>
                     <t t-name="kanban-box">
                         <div t-attf-class="oe_kanban_global_click oe_kanban_card">
@@ -146,7 +146,7 @@ action = {
             <form>
                 <header>
                     <field name="state" widget="statusbar" options="{'clickable': '1'}" 
-                           statusbar_visible="all_products,processing,approving,not_approved,done"/>
+                           statusbar_visible="all_products,processing,approving,done"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
