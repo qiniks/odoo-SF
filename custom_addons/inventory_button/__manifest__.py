@@ -7,7 +7,11 @@
     "depends": ["base", "stock"],
     "data": [
         "security/ir.model.access.csv",
-        "views/api_product_views.xml",
+        "views/api_product_tree_view.xml",
+        "views/api_product_kanban_view.xml",
+        "views/api_product_form_view.xml",
+        "views/api_product_search_view.xml",
+        "views/api_product_actions.xml",
     ],
     "installable": True,
     "application": True,

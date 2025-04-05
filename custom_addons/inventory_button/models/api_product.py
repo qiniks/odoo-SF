@@ -42,7 +42,6 @@ class ApiProduct(models.Model):
             ("all_products", "All Products"),
             ("processing", "Processing"),
             ("approving", "Approving"),
-            ("not_approved", "Not Approved"),
             ("done", "Done"),
         ],
         string="Status",
