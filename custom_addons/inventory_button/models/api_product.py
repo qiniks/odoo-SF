@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class ApiProduct(models.Model):
     _name = "api.product"
     _description = "API Product Data"
-    _order = "name"  # Updated order to only sort by name
+    _order = "priority desc, star_priority desc, name"  # Order by priority, then star priority, then name
 
     api_id = fields.Integer("API ID", required=True)
     name = fields.Char("Name", required=True)
@@ -33,7 +33,15 @@ class ApiProduct(models.Model):
         string="Status",
         default="all_products",
         tracking=True,
+        readonly=False,
+        group_expand="_read_group_state",
     )
+
+    # Add this method to properly expand groups in kanban
+    @api.model
+    def _read_group_state(self, states, domain, order):
+        # Return all possible values for state field
+        return [state[0] for state in self._fields["state"].selection]
 
     # Priority field for sorting (computed based on tags)
     priority = fields.Integer(
