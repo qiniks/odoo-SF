@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class ApiProduct(models.Model):
     _name = "api.product"
     _description = "API Product Data"
-    _order = "priority desc, design_difficulty desc, name"  # Order by priority, then star priority, then name
+    _order = "priority desc, design_difficulty desc, name"  # Order by priority, then design priority, then name
 
     api_id = fields.Integer("API ID", required=True)
     name = fields.Char("Name", required=True)
@@ -22,7 +22,15 @@ class ApiProduct(models.Model):
     email = fields.Char("Email")
 
     design_difficulty = fields.Selection(
-        [("0", "Normal"), ("1", "Low"), ("2", "Medium"), ("3", "High")],
+        [
+            ("0", "Standard"),
+            ("1", "Quick Edit"),
+            ("2", "Some Effort"),
+            ("3", "Time-Consuming"),
+            ("4", "Complex Design"),
+            ("5", "Intensive Work"),
+        ],
+        help="Design difficulty level",
         default="0",
         string="Design difficulty",
         tracking=True,
