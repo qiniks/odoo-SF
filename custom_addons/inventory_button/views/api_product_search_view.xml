@@ -10,6 +10,13 @@
                 <field name="design"/>
                 <field name="email"/>
                 <filter string="Fast Ship" name="fast_ship" domain="[('fast_ship', '=', True)]"/>
+                
+                <!-- Tags filters -->
+                <separator/>
+                <filter string="Urgent" name="tag_urgent" domain="[('fast_ship', '=', True)]"/>
+                <filter string="Bulk Order" name="tag_bulk" domain="[('quantity', '>', 10)]"/>
+                <filter string="Custom" name="tag_custom" domain="[('design', '!=', False), ('design', '!=', '')]"/>
+                
                 <group expand="0" string="Group By">
                     <filter string="Design" name="groupby_design" context="{'group_by': 'design'}"/>
                     <filter string="Date" name="groupby_date" context="{'group_by': 'date'}"/>
