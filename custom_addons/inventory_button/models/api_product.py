@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 class ApiProduct(models.Model):
     _name = "api.product"
     _description = "API Product Data"
-    _order = "priority desc, star_priority desc, name"  # Order by priority, then star priority, then name
+    _order = "priority desc, design_difficulty desc, name"  # Order by priority, then star priority, then name
 
     api_id = fields.Integer("API ID", required=True)
     name = fields.Char("Name", required=True)
@@ -20,6 +20,13 @@ class ApiProduct(models.Model):
     fast_ship = fields.Boolean("Fast Ship", default=False)
     quantity = fields.Integer("Quantity", default=1)
     email = fields.Char("Email")
+
+    design_difficulty = fields.Selection(
+        [("0", "Normal"), ("1", "Low"), ("2", "Medium"), ("3", "High")],
+        default="0",
+        string="Design difficulty",
+        tracking=True,
+    )
 
     # New state field with selection options
     state = fields.Selection(

@@ -22,7 +22,7 @@ action = {
 
     <!-- Menu item for Random Deliveries (from stock_picking_views.xml) -->
     <menuitem id="menu_random_deliveries"
-              name="Fetch data from API"
+              name="Fetch data"
               parent="stock.menu_stock_root"
               action="action_generate_random_deliveries"
               sequence="15"/>
@@ -67,13 +67,14 @@ action = {
         <field name="model">api.product</field>
         <field name="arch" type="xml">
             <kanban default_group_by="state" 
-                   quick_create="false" 
-                   class="o_kanban_small_column" 
+                   quick_create="false"
+                   class="o_kanban_grouped" 
                    records_draggable="true"
                    on_create="quick_create"
-                   column_order="all_products,processing,approving,not_approved,done"
+                   examples="1"
+                   groups_draggable="true"
                    groups_limit="5"
-                   default_order="priority desc, name">
+                   default_order="priority desc, design_difficulty desc, name">
                 <field name="api_id"/>
                 <field name="name"/>
                 <field name="date"/>
@@ -103,10 +104,9 @@ action = {
                                         <strong>Custom</strong>
                                     </span>
                                 </div>
+                                <field name="design_difficulty" widget="priority"/>
                                 <ul class="mt-2 ps-0" style="list-style-type: none;"> 
-                                    <li>Design: <field name="design"/></li>
                                     <li>Date: <field name="date"/></li>
-                                    <li>API ID: <field name="api_id"/></li>
                                     <li>Fast Ship: <field name="fast_ship"/></li>
                                     <li>Quantity: <field name="quantity"/></li>
                                     <li>Email: <field name="email"/></li>
@@ -159,11 +159,13 @@ action = {
                             <field name="api_id"/>
                             <field name="date"/>
                             <field name="fast_ship"/>
+                            <field name="design_difficulty" widget="priority"/>
                         </group>
                         <group>
                             <field name="design"/>
                             <field name="quantity"/>
                             <field name="email"/>
+                            <field name="priority"/>
                         </group>
                     </group>
                 </sheet>
